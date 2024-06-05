@@ -54,7 +54,7 @@ void stepPrinter(vector<pair<int, pair<char, char>>>& steps, string word) {
                 cout << count << ". ";
                 count++;
                 cout << "Insert " << lettera << endl;
-                newWord.insert(newWord.begin() + pos, lettera);
+                newWord.insert(newWord.begin() + pos++, lettera);
                 cout << "Current word: " << newWord << endl;
                 break;
         }
@@ -85,6 +85,7 @@ void wagnerFischer(string a, string b) {
                                 matrix[i][j-1] + 1, //insertion
                                 matrix[i-1][j-1] + subsitutionCost}); //subsitution
         }
+        printMatrix(matrix);
     }
 
     //loop to backtrack and find steps (favor order: subs, dels, ins)
@@ -106,7 +107,7 @@ void wagnerFischer(string a, string b) {
             i--;
         }
         else if(curr == ins + 1){ // letter from a was inserted into b
-            steps.insert(steps.begin(), {3, {a[i-1], ' '}});
+            steps.insert(steps.begin(), {3, {b[j-1], ' '}});
             j--;
         }
         else { // no operation was performed
@@ -116,7 +117,7 @@ void wagnerFischer(string a, string b) {
         }
     }
 
-    cout << "Edit distance is: " << matrix[a.size()][b.size()] << endl;
+    cout << "Edit distance is: " << matrix[a.size()][b.size()] << endl <<endl;
     cout << "Using the steps: \n---------------------------------\n";
     stepPrinter(steps, a);
 }
@@ -131,6 +132,7 @@ int main() {
     cin >> word1;
     cout << "Enter word 2: ";
     cin >> word2;
+    cout << endl;
     wagnerFischer(word1, word2);
     return 0;
 }
