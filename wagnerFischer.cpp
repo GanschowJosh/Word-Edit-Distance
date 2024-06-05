@@ -2,9 +2,6 @@
 Levenshtein distance calculator using the Wagner-Fischer algorithm
 */
 
-
-
-
 #include <bits/stdc++.h>
 #include <iostream>
 #include <iomanip>
