@@ -85,7 +85,6 @@ void wagnerFischer(string a, string b) {
                                 matrix[i][j-1] + 1, //insertion
                                 matrix[i-1][j-1] + subsitutionCost}); //subsitution
         }
-        printMatrix(matrix);
     }
 
     //loop to backtrack and find steps (favor order: subs, dels, ins)
