@@ -19,23 +19,43 @@ void printMatrix(vector<vector<int>>& vec) {
 }
 
 //prints out the steps taken for the edit
-void stepPrinter(vector<pair<int, pair<char, char>>>& steps) {
+void stepPrinter(vector<pair<int, pair<char, char>>>& steps, string word) {
     int count = 1;
+    string newWord = word;
+    int pos = 0; //position of the operation in the string
+    bool print = true;
     for(auto& it : steps) { //iterating over each step
-        cout << count << ". ";
-        count++;
         int op = it.first;
         char lettera = it.second.first;
         char letterb = it.second.second;
         switch(op){
+            case 0: //nothing occurred
+                pos++;
+                break;
             case 1: //substitution occurred
+                cout << count << ". ";
+                count++;
                 cout << "Swap " << lettera << " for " << letterb << endl;
+                if(pos < newWord.size()) {
+                    newWord[pos++] = letterb;
+                }
+                cout << "Current word: " << newWord << endl;
                 break;
             case 2: //deletion occurred
+                cout << count << ". ";
+                count++;
                 cout << "Delete " << lettera << endl;
+                if(pos < newWord.size()) {
+                    newWord.erase(newWord.begin() + pos);
+                }
+                cout << "Current word: " << newWord << endl;
                 break;
             case 3: //insertion occurred
+                cout << count << ". ";
+                count++;
                 cout << "Insert " << lettera << endl;
+                newWord.insert(newWord.begin() + pos, lettera);
+                cout << "Current word: " << newWord << endl;
                 break;
         }
     }
@@ -90,6 +110,7 @@ void wagnerFischer(string a, string b) {
             j--;
         }
         else { // no operation was performed
+            steps.insert(steps.begin(), {0, {' ', ' '}});
             j--;
             i--;
         }
@@ -97,7 +118,7 @@ void wagnerFischer(string a, string b) {
 
     cout << "Edit distance is: " << matrix[a.size()][b.size()] << endl;
     cout << "Using the steps: \n---------------------------------\n";
-    stepPrinter(steps);
+    stepPrinter(steps, a);
 }
 
 
@@ -111,6 +132,5 @@ int main() {
     cout << "Enter word 2: ";
     cin >> word2;
     wagnerFischer(word1, word2);
-    // cout << "Levenshtein distance is: " << wagnerFischer(word1, word2) << endl;
     return 0;
 }
