@@ -18,8 +18,31 @@ void printMatrix(vector<vector<int>>& vec) {
     cout << endl << endl;
 }
 
+//prints out the steps taken for the edit
+void stepPrinter(vector<pair<int, pair<char, char>>>& steps) {
+    int count = 1;
+    for(auto& it : steps) { //iterating over each step
+        cout << count << ". ";
+        count++;
+        int op = it.first;
+        char lettera = it.second.first;
+        char letterb = it.second.second;
+        switch(op){
+            case 1: //substitution occurred
+                cout << "Swap " << lettera << " for " << letterb << endl;
+                break;
+            case 2: //deletion occurred
+                cout << "Delete " << lettera << endl;
+                break;
+            case 3: //insertion occurred
+                cout << "Insert " << lettera << endl;
+                break;
+        }
+    }
+}
+
 //algo
-int wagnerFischer(string a, string b) {
+void wagnerFischer(string a, string b) {
 
 
     //creating a matrix with dimensions of the length of the strings(plus extra one for empty character at front)
@@ -33,14 +56,48 @@ int wagnerFischer(string a, string b) {
         matrix[0][j] = j;
     }
 
+    //loop to perform operations
     for(int i = 1; i <= a.size(); i++) {
         for(int j = 1; j <= b.size(); j++) {
             int subsitutionCost = (a[i-1] == b[j-1]) ? 0 : 1;
-            matrix[i][j] = min({matrix[i-1][j] + 1, matrix[i][j-1] + 1, matrix[i-1][j-1] + subsitutionCost});
+            
+            matrix[i][j] = min({matrix[i-1][j] + 1, //deletion
+                                matrix[i][j-1] + 1, //insertion
+                                matrix[i-1][j-1] + subsitutionCost}); //subsitution
         }
     }
-    
-    return matrix[a.size()][b.size()];
+
+    //loop to backtrack and find steps (favor order: subs, dels, ins)
+    vector<pair<int, pair<char, char>>> steps; //vector of pairs: (operation, (letter a, letter b))
+    int i = a.size(), j = b.size();
+    while(i > 0 && j > 0) {
+        int curr = matrix[i][j];
+        int sub = matrix[i-1][j-1]; //operation 1
+        int del = matrix[i-1][j]; //operation 2
+        int ins = matrix[i][j-1]; //operation 3
+
+        if(curr == sub + 1) { //letters were swapped
+            steps.insert(steps.begin(), {1, {a[i-1], b[j-1]}});
+            j--;
+            i--;
+        }
+        else if(curr == del + 1) { //letter was deleted from a
+            steps.insert(steps.begin(), {2, {a[i-1], ' '}});
+            i--;
+        }
+        else if(curr == ins + 1){ // letter from a was inserted into b
+            steps.insert(steps.begin(), {3, {a[i-1], ' '}});
+            j--;
+        }
+        else { // no operation was performed
+            j--;
+            i--;
+        }
+    }
+
+    cout << "Edit distance is: " << matrix[a.size()][b.size()] << endl;
+    cout << "Using the steps: \n---------------------------------\n";
+    stepPrinter(steps);
 }
 
 
@@ -53,6 +110,7 @@ int main() {
     cin >> word1;
     cout << "Enter word 2: ";
     cin >> word2;
-    cout << "Levenshtein distance is: " << wagnerFischer(word1, word2) << endl;
+    wagnerFischer(word1, word2);
+    // cout << "Levenshtein distance is: " << wagnerFischer(word1, word2) << endl;
     return 0;
 }
